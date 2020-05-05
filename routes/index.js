@@ -1,4 +1,4 @@
-const mod=require('./modules').module;
+const mod=require('../modules').module;
 const router = mod.express.Router();
 
 router.get('/AuthPage',function(req,res)
@@ -18,6 +18,10 @@ headers:{'Accept':'application/json'}
 })
 .then(function(resp)
 {
+    if(resp.data.access_token)
+    {
+        req.session.token=resp.data.access_token;
+    }
     res.send(resp.data);
 })
 .catch(function(err)
@@ -30,19 +34,37 @@ headers:{'Accept':'application/json'}
 
 router.get('/getUserDetails',function(req,res)
 {
+console.log(req.session.token);
+ if(req.session.token)
+ {   
 mod.axios({
 url:'https://api.github.com/user',
 method:'GET',
-headers:{'Authorization':req.headers["authorization"]}
+headers:{'Authorization':"token"+" "+req.session.token}
 })
 .then(function(resp)
 {
+    res.cookie('login',resp.data.login,{httpOnly:true});
     res.send(resp.data);
 })
 .catch(function(err)
 {
     res.send(err);
 })
+ }
+ else
+ {
+     res.status(401).send();
+ }
+})
+
+router.get('/logout',function(req,res)
+{
+    req.session=null;
+    res.clearCookie('sess');
+    res.clearCookie('login');
+
+    res.status(200).send();
 })
 
 module.exports = router;

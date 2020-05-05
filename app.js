@@ -1,8 +1,5 @@
-const mod=require('./routes/modules').module;
-
-
+const mod=require('./modules').module;
 var app = mod.express();
-
 
 // view engine setup
 app.set('views', mod.path.join(__dirname, 'views'));
@@ -19,30 +16,26 @@ app.use(mod.cors({
   methods:['GET','PUT','POST','DELETE'],
   credentials:true
 }))
+
+app.use(mod.cookieSession({
+name:'sess', //name of the cookie in the browser
+secret:'asdfgh',
+httpOnly:true
+}))
 const indexRouter = require('./routes/index');
 
 
 app.use('/', indexRouter);
 
-// catch 404 and forward to error handler
-/*app.use(function(req, res, next) {
-  next(createError(404));
-});*/
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  //res.locals.message = err.message;
-  //res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  console.log(err);
-  res.status(err.status).send();
-  
+res.status(err.status).send();
 });
 
 app.listen(mod.config.APP_PORT,function()
 {
-    console.log("app listening on port"+mod.config.APP_PORT);
+  console.log("app listening on port"+mod.config.APP_PORT);
 })
 
 module.exports = app;
