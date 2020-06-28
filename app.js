@@ -13,8 +13,7 @@ app.use(mod.express.static(mod.path.join(__dirname, 'public')));
 
 app.use(mod.cors({
   origin:['http://localhost:4200'],
-  methods:['GET','PUT','POST','DELETE'],
-  credentials:true
+  methods:['GET','PUT','POST','DELETE']
 }))
 
 app.use(mod.cookieSession({
@@ -25,7 +24,7 @@ httpOnly:true
 const indexRouter = require('./routes/index');
 
 
-app.use('/', indexRouter);
+app.use('/oauth', indexRouter);
 
 
 // error handler
